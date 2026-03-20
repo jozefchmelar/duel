@@ -873,7 +873,11 @@
             addHistory(kind, delta);
 
             const meta = roundMeta[state.round];
+
             if (meta.limit && state.questionIndex >= meta.limit) {
+                if (state.round === 1 && state.score >= 300) {
+                    launchConfetti();
+                }
                 if (state.round < 3) {
                     state.round++;
                     state.questionIndex = 0;
@@ -1123,7 +1127,60 @@
         });
 
         render();
+
+        /* ---- Confetti ---- */
+        function launchConfetti() {
+            const canvas = document.getElementById("confetti-canvas");
+            const ctx = canvas.getContext("2d");
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+
+            const colors = ["#00ccff", "#ffd700", "#ff5050", "#00c864", "#ff80ff", "#ffffff"];
+            const pieces = [];
+            for (let i = 0; i < 120; i++) {
+                pieces.push({
+                    x: canvas.width * Math.random(),
+                    y: -20 - Math.random() * canvas.height * 0.4,
+                    w: 6 + Math.random() * 6,
+                    h: 4 + Math.random() * 4,
+                    color: colors[Math.floor(Math.random() * colors.length)],
+                    vx: (Math.random() - 0.5) * 4,
+                    vy: 2 + Math.random() * 4,
+                    rot: Math.random() * Math.PI * 2,
+                    rv: (Math.random() - 0.5) * 0.2,
+                    alpha: 1
+                });
+            }
+
+            function draw() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                let alive = false;
+                pieces.forEach(p => {
+                    p.x += p.vx;
+                    p.y += p.vy;
+                    p.vy += 0.12;
+                    p.rot += p.rv;
+                    if (p.y > canvas.height + 20) p.alpha -= 0.05;
+                    if (p.alpha <= 0) return;
+                    alive = true;
+                    ctx.save();
+                    ctx.globalAlpha = Math.max(0, p.alpha);
+                    ctx.translate(p.x, p.y);
+                    ctx.rotate(p.rot);
+                    ctx.fillStyle = p.color;
+                    ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+                    ctx.restore();
+                });
+                if (alive) {
+                    requestAnimationFrame(draw);
+                } else {
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                }
+            }
+            draw();
+        }
     </script>
     <footer style="text-align:center;padding:24px 0 12px;color:#8ea4c9;font-size:0.75rem;opacity:0.6">vibe coded by <a href="https://jozefchmelar.com" style="color:inherit;text-decoration:underline" target="_blank" rel="noopener">jozefchmelar.com</a></footer>
+    <canvas id="confetti-canvas" style="position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:9999"></canvas>
 </body>
 </html>
