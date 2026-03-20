@@ -842,6 +842,7 @@
             state.role = role;
             document.body.dataset.theme = role;
             playerName.textContent = role === "yellow" ? "Hráč č. 2" : "Hráč č. 1";
+            document.querySelector('meta[name="theme-color"]').content = role === "yellow" ? "#1a1500" : "#001a22";
             saveState();
             render();
         }
@@ -985,6 +986,7 @@
             }
 
             document.body.dataset.theme = state.role;
+            document.querySelector('meta[name="theme-color"]').content = state.role === "yellow" ? "#1a1500" : "#001a22";
             playerName.textContent = state.role === "yellow" ? "Hráč č. 2" : "Hráč č. 1";
             scoreDisplay.textContent = formatCurrency(state.score);
 
@@ -1122,6 +1124,7 @@
 
         document.getElementById("change-role").addEventListener("click", () => {
             state.role = null;
+            document.querySelector('meta[name="theme-color"]').content = "#000510";
             saveState();
             render();
         });
